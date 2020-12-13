@@ -1,75 +1,93 @@
-import java.io.*;
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+package sample;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.Random;
-
+import java.util.regex.Pattern;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import Mail.test1;
-public class Hacker {
-    public static WebDriver driver;
 
-    public static FileReader fr;
-    public static BufferedReader br;
-    public static String map[] = new String[9999];;
-    public static int i = 0, j = 0, randomInt;
+public class Hacker {
+    private WebDriver driver;
+    private FileReader fr;
+    private BufferedReader br;
+    private String[] map = new String[9999];
+    private int i = 0;
+    private int j = 0;
+    private int randomInt;
+    public String phone;
+    public String name;
     private static Random random = new Random();
 
-    public static void loadName() throws IOException {
-        fr = new FileReader("D:\\name.txt");
-        br = new BufferedReader(fr);
-        String line = "";
-        while ((line = br.readLine()) != null){
-            String[] word = line.split("\t");
-
-            map[i] = (word[0]);
-            ++i;
-            map[i] = (word[1]);
-            ++i;
-        }
-        br.close();
+    public Hacker() {
     }
 
-    public static void main(String args[]) throws IOException, InterruptedException {
-        loadName();
+    public void loadName() throws IOException {
+        this.fr = new FileReader("D:\\name.txt");
+        this.br = new BufferedReader(this.fr);
 
+        for(String line = ""; (line = this.br.readLine()) != null; ++this.i) {
+            String[] word = line.split("\t");
+            this.map[this.i] = word[0];
+            ++this.i;
+            this.map[this.i] = word[1];
+        }
 
-        //for (int i = 0; i < 3; i++) {
-            // get random int
-            randomInt = random.nextInt(1000);
+        this.br.close();
+    }
 
-            while (randomInt % 2 != 0) {
-                randomInt = random.nextInt(1000);
-            }
-
-            //
-            System.setProperty("webdriver.edge.driver", "D:\\msedgedriver.exe");
-            driver = new EdgeDriver();
-
-            driver.manage().window();
-
-            // vao web
-            driver.get("https://dean1665.vn/svs/dich-vu-du-lich/chuoi-cung-ung-va-so-che-thuc-pham-sach-381.html");
-
-            driver.findElement(By.className("close")).click();
-
-            driver.findElement(By.id("381")).click();
-
-            //Thread.sleep(10000);
-            WebDriverWait wait = new WebDriverWait(driver, 60);
-            wait.until(ExpectedConditions.elementToBeClickable(By.className("close")));
-
-            driver.findElement(By.className("close")).click();
-
-            driver.findElement(By.xpath("/html/body/div[3]/div/div/div[1]/div/form/div[1]/div/div[3]/table/tbody[2]/tr[1]/td[3]/select/option[2]")).click();
-            driver.findElement(By.xpath("/html/body/div[3]/div/div/div[1]/div/form/div[1]/div/div[3]/table/tbody[2]/tr[2]/td[3]/select/option[2]")).click();
-            driver.findElement(By.xpath("/html/body/div[3]/div/div/div[1]/div/form/div[1]/div/div[3]/table/tbody[2]/tr[3]/td[3]/select/option[2]")).click();
-
-            driver.findElement(By.name("fullname")).sendKeys(map[randomInt + 1]);
-            driver.findElement(By.name("mobile")).sendKeys(map[randomInt]);
-            driver.findElement(By.name("email")).sendKeys(test1.getNewMail());
-        //}
+    public void auto(String mail) throws InterruptedException {
+        int randomInt = this.getRandomInt();
+        System.setProperty("webdriver.edge.driver", "D:\\msedgedriver.exe");
+        this.driver = new EdgeDriver();
+        this.driver.get("https://dean1665.vn/svs/dich-vu-du-lich/chuoi-cung-ung-va-so-che-thuc-pham-sach-381.html");
+        Thread.sleep(1000L);
+        this.driver.findElement(By.className("close")).click();
+        this.driver.findElement(By.id("381")).click();
+        WebDriverWait wait = new WebDriverWait(this.driver, 60L);
+        wait.until(ExpectedConditions.elementToBeClickable(By.className("close")));
+        this.driver.findElement(By.className("close")).click();
+        this.driver.findElement(By.xpath("/html/body/div[3]/div/div/div[1]/div/form/div[1]/div/div[3]/table/tbody[2]/tr[1]/td[3]/select/option[2]")).click();
+        this.driver.findElement(By.xpath("/html/body/div[3]/div/div/div[1]/div/form/div[1]/div/div[3]/table/tbody[2]/tr[2]/td[3]/select/option[2]")).click();
+        this.driver.findElement(By.xpath("/html/body/div[3]/div/div/div[1]/div/form/div[1]/div/div[3]/table/tbody[2]/tr[3]/td[3]/select/option[2]")).click();
+        this.name = this.removeAccent(this.map[randomInt + 1]);
+        this.phone = this.map[randomInt];
+        this.driver.findElement(By.name("fullname")).sendKeys(new CharSequence[]{this.name});
+        this.driver.findElement(By.name("email")).sendKeys(new CharSequence[]{mail});
+        this.driver.findElement(By.name("mobile")).sendKeys(new CharSequence[]{this.phone});
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(By.xpath("//iframe[starts-with(@name,'a-')]")));
+        WebElement element = (WebElement)wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.recaptcha-checkbox-border")));
+        Thread.sleep(3000L);
+        element.click();
         System.out.println("done");
+    }
+
+    public String removeAccent(String s) {
+        String temp = Normalizer.normalize(s, Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(temp).replaceAll("");
+    }
+
+    public int getRandomInt() {
+        for(this.randomInt = random.nextInt(1000); this.randomInt % 2 != 0; this.randomInt = random.nextInt(1000)) {
+        }
+
+        return this.randomInt;
+    }
+
+    public void getAllInfo(String mail) {
+        int randomInt = this.getRandomInt();
+        this.name = this.removeAccent(this.map[randomInt + 1]);
+        this.phone = this.map[randomInt];
     }
 }
